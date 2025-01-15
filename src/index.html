@@ -10,7 +10,7 @@
 
 <body>
   <main>
-    <h1>Lead Summary</h1>
+    <h1>Vanilla JavaScript App</h1>
     <div id="api-content" style="padding: 10px; border: 1px solid #ccc;">
       <!-- The data from the API will be displayed here -->
     </div>
@@ -27,29 +27,24 @@
         }
 
         const data = await response.json();
-        displayData(data);
+        displayValues(data);
       } catch (error) {
         document.getElementById('api-content').textContent = `Error fetching API data: ${error.message}`;
       }
     }
 
-    function displayData(data, parent = document.getElementById('api-content')) {
-      // Recursively iterate through the JSON and append the key-value pairs
+    function displayValues(data, parent = document.getElementById('api-content')) {
+      // Recursively extract and display only the values
       for (const key in data) {
         if (data.hasOwnProperty(key)) {
           const value = data[key];
 
-          const paragraph = document.createElement('p');
           if (typeof value === 'object' && value !== null) {
-            paragraph.textContent = `${key}:`;
-            parent.appendChild(paragraph);
             // Recursive call for nested objects
-            const nestedDiv = document.createElement('div');
-            nestedDiv.style.marginLeft = '20px';
-            parent.appendChild(nestedDiv);
-            displayData(value, nestedDiv);
+            displayValues(value, parent);
           } else {
-            paragraph.textContent = `${key}: ${value}`;
+            const paragraph = document.createElement('p');
+            paragraph.textContent = value;
             parent.appendChild(paragraph);
           }
         }
