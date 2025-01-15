@@ -10,9 +10,9 @@
 
 <body>
   <main>
-    <h1>User Summary</h1>
-    <div id="api-content" style="white-space: pre-wrap; background: #f4f4f4; padding: 10px; border: 1px solid #ccc;">
-      API content will appear here...
+    <h1>Lead Summary</h1>
+    <div id="api-content" style="padding: 10px; border: 1px solid #ccc;">
+      <!-- The data from the API will be displayed here -->
     </div>
   </main>
 
@@ -27,14 +27,36 @@
         }
 
         const data = await response.json();
-        const contentDiv = document.getElementById('api-content');
-        contentDiv.textContent = JSON.stringify(data, null, 2); // Formats JSON for better readability
+        displayData(data);
       } catch (error) {
         document.getElementById('api-content').textContent = `Error fetching API data: ${error.message}`;
       }
     }
 
-    // Fetch the API data when the page loads
+    function displayData(data, parent = document.getElementById('api-content')) {
+      // Recursively iterate through the JSON and append the key-value pairs
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          const value = data[key];
+
+          const paragraph = document.createElement('p');
+          if (typeof value === 'object' && value !== null) {
+            paragraph.textContent = `${key}:`;
+            parent.appendChild(paragraph);
+            // Recursive call for nested objects
+            const nestedDiv = document.createElement('div');
+            nestedDiv.style.marginLeft = '20px';
+            parent.appendChild(nestedDiv);
+            displayData(value, nestedDiv);
+          } else {
+            paragraph.textContent = `${key}: ${value}`;
+            parent.appendChild(paragraph);
+          }
+        }
+      }
+    }
+
+    // Fetch and display data on page load
     window.onload = fetchApiData;
   </script>
 </body>
