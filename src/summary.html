@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Summary - API Data Viewer</title>
+</head>
+
+<body>
+  <main>
+    <h1>API Data Summary</h1>
+    <div id="api-content" style="padding: 10px; border: 1px solid #ccc;">
+      <!-- The data from the API will be displayed here -->
+    </div>
+  </main>
+
+  <script>
+    async function fetchApiData() {
+      const apiUrl = 'https://prod-15.westindia.logic.azure.com:443/workflows/c05457a7e4db4b29aacedcc9765f4b6f/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=QdXCDE7FuJH7N6x-cq6GEVinPBq4caP41TW-X8H-lBA';
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        displayValues(data);
+      } catch (error) {
+        document.getElementById('api-content').textContent = `Error fetching API data: ${error.message}`;
+      }
+    }
+
+    function displayValues(data, parent = document.getElementById('api-content')) {
+      // Recursively extract and display only the values
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          const value = data[key];
+
+          if (typeof value === 'object' && value !== null) {
+            // Recursive call for nested objects
+            displayValues(value, parent);
+          } else {
+            const paragraph = document.createElement('p');
+            paragraph.textContent = value;
+            parent.appendChild(paragraph);
+          }
+        }
+      }
+    }
+
+    // Fetch a
