@@ -10,8 +10,33 @@
 
 <body>
   <main>
-    <h1>Vanilla JavaScript App</h1>
+    <h1>User Summary</h1>
+    <div id="api-content" style="white-space: pre-wrap; background: #f4f4f4; padding: 10px; border: 1px solid #ccc;">
+      API content will appear here...
+    </div>
   </main>
+
+  <script>
+    async function fetchApiData() {
+      const apiUrl = 'https://prod-15.westindia.logic.azure.com:443/workflows/c05457a7e4db4b29aacedcc9765f4b6f/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=QdXCDE7FuJH7N6x-cq6GEVinPBq4caP41TW-X8H-lBA';
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const contentDiv = document.getElementById('api-content');
+        contentDiv.textContent = JSON.stringify(data, null, 2); // Formats JSON for better readability
+      } catch (error) {
+        document.getElementById('api-content').textContent = `Error fetching API data: ${error.message}`;
+      }
+    }
+
+    // Fetch the API data when the page loads
+    window.onload = fetchApiData;
+  </script>
 </body>
 
-</html
+</html>
