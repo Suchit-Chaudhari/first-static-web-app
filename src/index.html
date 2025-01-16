@@ -1,35 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home - API Data Viewer</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin-top: 20px;
+            color: #1a202c;
+            text-align: left;
+            background-color: #f0f4f8;    
+        }
+        .main-body {
+            padding: 15px;
+        }
+        .card {
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+            border-radius: .25rem;
+        }
+        .card-body {
+            padding: 1rem;
+        }
+        .progress-bar {
+            background-color: #4e73df;
+        }
+    </style>
 </head>
-
 <body>
-  <h1>Welcome to the API Data Viewer</h1>
-  <p>Click the button below to view the API data summary.</p>
-  <button onclick="window.location.href='summary.html'">Go to Summary</button>
-</body>
+    <div class="container">
+        <div class="main-body">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">User</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+                </ol>
+            </nav>
+            <!-- /Breadcrumb -->
 
+            <div class="row gutters-sm">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <img id="profile-picture" alt="User Profile" class="rounded-circle" width="150">
+                            <h4 id="user-name" class="mt-3"></h4>
+                            <p id="user-headline" class="text-secondary mb-1"></p>
+                            <p id="user-location" class="text-muted font-size-sm"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Full Name</h6></div>
+                                <div class="col-sm-9 text-secondary" id="full-name"></div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Headline</h6></div>
+                                <div class="col-sm-9 text-secondary" id="headline"></div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Location</h6></div>
+                                <div class="col-sm-9 text-secondary" id="location"></div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3"><h6 class="mb-0">Summary</h6></div>
+                                <div class="col-sm-9 text-secondary" id="summary"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education Section -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Education</h6>
+                            <ul id="education-list">
+                                <!-- Education will be injected here -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Experience Section -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">work</i>Experience</h6>
+                            <ul id="experience-list">
+                                <!-- Experience will be injected here -->
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch data from the API
+        fetch('https://prod-27.northcentralus.logic.azure.com:443/workflows/bdb99b34e028427480c2ee30b511a70e/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=uyKwBD8CyigON59H2vJaJZ4uIbqaUHUnGrPBXXiICec')
+            .then(response => response.json())
+            .then(data => {
+                // Set profile information dynamically
+                document.getElementById('profile-picture').src = data.profilePicture;
+                document.getElementById('user-name').innerText = data.firstName + " " + data.lastName;
+                document.getElementById('user-headline').innerText = data.headline;
+                document.getElementById('user-location').innerText = data.geo.full;
+                document.getElementById('full-name').innerText = data.firstName + " " + data.lastName;
+                document.getElementById('headline').innerText = data.headline;
+                document.getElementById('location').innerText = data.geo.full;
+                document.getElementById('summary').innerText = data.summary;
+
+                // Populate education list
+                const educationList = document.getElementById('education-list');
+                data.educations.forEach(education => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${education.degree}:</strong> ${education.schoolName} (${education.start.year} - ${education.end.year})`;
+                    educationList.appendChild(li);
+                });
+
+                // Populate experience list
+                const experienceList = document.getElementById('experience-list');
+                data.position.forEach(position => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${position.title}:</strong> ${position.companyName} - ${position.location} (${position.start.year} - Present)`;
+                    experienceList.appendChild(li);
+                });
+            })
+            .catch(error => console.log('Error fetching data:', error));
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>
